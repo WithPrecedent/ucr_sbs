@@ -1,6 +1,23 @@
 
 import pathlib
 
+import numpy as np
+import pandas as pd
+
+
+violent_crime_numericals = [
+    'Year',
+    'Population',
+    'Total Violent Crime',
+    'Homicide',
+    'Rape (original)',
+    'Rape (revised)',
+    'Robbery',
+    'Aggravated Assault',
+    'Total Property Crime',
+    'Burglary',
+    'Larceny',
+    'Auto Theft']
 
 violent_crime_labels = {
     'year': 'Year',
@@ -21,11 +38,13 @@ violent_crime_labels = {
 
 offenses =[
     'Homicide',
-    'Rape',
+    'Rape (original)',
+    'Rape (revised)',
     'Robbery',
     'Aggravated Assault',
     'Burglary',
     'Larceny',
     'Auto Theft']
+
 data_path = pathlib.Path('../../data/crime')
 violent_crime_states = 'UCR/SBS/1979_to_2023_violent_estimates_by_state.csv'
