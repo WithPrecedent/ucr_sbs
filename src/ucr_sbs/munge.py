@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from numpy import int64
 import pandas as pd
 
 from . import options
@@ -93,3 +92,59 @@ def reshape_wide(df: pd.DataFrame, columns: list[str]) -> pd.DataFrame:
 
     """
     return pd.pivot(df, columns = columns)
+
+def separate_total_data(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """separate_total_data _summary_
+
+    Args:
+        df: _description_
+
+    Returns:
+        _description_
+    """
+    total = df[df['State'].isna()]
+    total = total.assign(State = 'US')
+    total = total.assign(**{'State Name': 'United States'})
+    original = df.drop(df[df['State'].isna()].index)
+    return total, original
+
+def get_rape_original_to_revised_ratio(df: pd. DataFrame) -> float:
+    """get_rape_original_to_revised_ratio _summary_
+
+    Args:
+        df: _description_
+
+    Returns:
+        _description_
+    """
+    return df['Rape (original) Rate'].mean()/df['Rape (revised) Rate']
+
+def impute_missing_rape_data(row: pd.Series, ratio: float) -> pd.Series:
+    """impute_missing_rape_data _summary_
+
+    Args:
+        row: _description_
+        ratio: _description_
+
+    Returns:
+        _description_
+    """
+    if row['Rape (revised) Rate'] and not row['Rape (original) Rate']:
+        row['Rape (original) Rate'] = ratio * row['Rape (revised) Rate']
+    elif not row['Rape (revised) Rate'] and row['Rape (original) Rate']:
+        row['Rape (revised) Rate'] = row['Rape (original) Rate'] / ratio
+    return row
+
+def add_missing_rape_data(df: pd.DataFrame, total: pd.DataFrame) -> pd.DataFrame:
+    """add_missing_data _summary_
+
+    Args:
+        df: _description_
+        total: _description_
+
+    Returns:
+        _description_
+    """
+    ratio = get_rape_original_to_revised_ratio(total)
+    df.apply(impute_missing_rape_data, axis = 1, args = {'ratio': ratio})
+    return df

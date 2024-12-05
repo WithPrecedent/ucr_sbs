@@ -10,8 +10,13 @@ def test_ucr_sbs() -> None:
     df = ucr_sbs.munge.remove_comma_separators(df)
     df = ucr_sbs.munge.change_types(df)
     df = ucr_sbs.munge.add_rate_columns(df)
-    # df = ucr_sbs.munge.reshape_wide(df, ['Year', 'State'])
-    print(df.head())
+    total, states = ucr_sbs.munge.separate_total_data(df)
+    states = ucr_sbs.munge.add_missing_rape_data(states, total)
+    total = ucr_sbs.munge.add_missing_rape_data(total, total)
+    print(states.columns)
+    print(states.head())
+    print(total.head())
+    ucr_sbs.visualize.plot_total_rate_time_series(total)
     return
 
 if __name__ == '__main__':
