@@ -17,6 +17,9 @@ def test_ucr_sbs() -> None:
     print(states.head())
     print(total.head())
     ucr_sbs.visualize.plot_total_rate_time_series(total)
+    ucr_sbs.visualize.plot_total_rate_percent_change(total)
+    ucr_sbs.visualize.plot_aggregate_violent_crime_rate(total)
+    ucr_sbs.visualize.plot_aggregate_property_crime_rate(total)
     return
 
 if __name__ == '__main__':

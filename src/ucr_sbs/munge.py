@@ -1,11 +1,12 @@
 """Cleans and organizes data"""
 
 from __future__ import annotations
+import copy
 
+import numpy as np
 import pandas as pd
 
 from . import options
-
 
 
 def remove_comma_separators(df: pd.DataFrame) -> pd.DataFrame:
@@ -64,7 +65,9 @@ def add_rate_columns(df: pd.DataFrame) -> pd.DataFrame:
     Returns:
         _description_
     """
-    for column in options.offenses:
+    columns = copy.deepcopy(options.offenses)
+    columns.extend(['Total Violent Crime', 'Total Property Crime'])
+    for column in columns:
         df = add_rate_column(df, column)
     return df
 
@@ -117,7 +120,13 @@ def get_rape_original_to_revised_ratio(df: pd. DataFrame) -> float:
     Returns:
         _description_
     """
-    return df['Rape (original) Rate'].mean()/df['Rape (revised) Rate']
+    revised = df.loc[
+        df['Rape (revised) Rate'].notna() & df['Rape (original) Rate'].notna(),
+        'Rape (revised) Rate'].mean()
+    original = df.loc[
+        df['Rape (original) Rate'].notna() & df['Rape (revised) Rate'].notna(),
+        'Rape (original) Rate'].mean()
+    return original/revised
 
 def impute_missing_rape_data(row: pd.Series, ratio: float) -> pd.Series:
     """impute_missing_rape_data _summary_
@@ -129,9 +138,9 @@ def impute_missing_rape_data(row: pd.Series, ratio: float) -> pd.Series:
     Returns:
         _description_
     """
-    if row['Rape (revised) Rate'] and not row['Rape (original) Rate']:
+    if row['Rape (revised) Rate'] and pd.isna(row['Rape (original) Rate']):
         row['Rape (original) Rate'] = ratio * row['Rape (revised) Rate']
-    elif not row['Rape (revised) Rate'] and row['Rape (original) Rate']:
+    elif pd.isna(row['Rape (revised) Rate']) and row['Rape (original) Rate']:
         row['Rape (revised) Rate'] = row['Rape (original) Rate'] / ratio
     return row
 
@@ -146,5 +155,5 @@ def add_missing_rape_data(df: pd.DataFrame, total: pd.DataFrame) -> pd.DataFrame
         _description_
     """
     ratio = get_rape_original_to_revised_ratio(total)
-    df.apply(impute_missing_rape_data, axis = 1, args = {'ratio': ratio})
-    return df
+    return df.apply(impute_missing_rape_data, axis = 1, ratio = ratio)
+
