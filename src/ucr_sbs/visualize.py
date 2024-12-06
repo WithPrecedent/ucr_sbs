@@ -17,8 +17,13 @@ def plot_total_rate_time_series(df: pd.DataFrame) -> None:
     Args:
         df: _description_
     """
-    for offense in options.violent_offenses:
-        rate_column = ' '.join([offense, options.rate_suffix])
-        sns.lineplot(x = "Year", y = rate_column, data = df)
+    columns = ['Year']
+    columns.extend([
+        ' '.join([c, options.rate_suffix]) for c in options.violent_offenses])
+    rate_df = df[df[columns]]
+    sns.lineplot(data = rate_df)
+    # for offense in options.violent_offenses:
+    #     rate_column = ' '.join([offense, options.rate_suffix])
+    #     sns.lineplot(x = "Year", y = rate_column, data = df, columns = rate_columns)
     plt.show()
     return
