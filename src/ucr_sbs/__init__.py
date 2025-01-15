@@ -9,9 +9,8 @@ __author__: str = 'Corey Rayburn Yung'
 
 __all__: list[str] = []
 
-
+from . import core
 from . import munge
 from . import options
-
-from . import core
+from . import sources
 from . import visualize

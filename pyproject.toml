@@ -22,7 +22,8 @@ keywords = []
 dependencies = [
     "numpy",
     "pandas",
-    "seaborn"]
+    "seaborn",
+    "scikit-learn"]
 
 [project.urls]
 Documentation = "https://WithPrecedent.github.io/ucr_sbs"
